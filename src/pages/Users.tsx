@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { User } from "@/types";
 import { Button } from "@/components/ui/button";
@@ -160,9 +159,7 @@ const Users = () => {
             <div className="space-y-4 py-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="firstName" required>
-                    First Name
-                  </Label>
+                  <Label htmlFor="firstName">First Name <span className="text-red-500">*</span></Label>
                   <Input
                     id="firstName"
                     placeholder="Enter first name"
@@ -172,9 +169,7 @@ const Users = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="lastName" required>
-                    Last Name
-                  </Label>
+                  <Label htmlFor="lastName">Last Name <span className="text-red-500">*</span></Label>
                   <Input
                     id="lastName"
                     placeholder="Enter last name"
@@ -185,9 +180,7 @@ const Users = () => {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="email" required>
-                  Email
-                </Label>
+                <Label htmlFor="email">Email <span className="text-red-500">*</span></Label>
                 <Input
                   id="email"
                   type="email"
@@ -198,9 +191,7 @@ const Users = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="role" required>
-                  Role
-                </Label>
+                <Label htmlFor="role">Role</Label>
                 <Select
                   value={newRole}
                   onValueChange={(value: User["role"]) => setNewRole(value)}

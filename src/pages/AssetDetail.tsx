@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { assetService } from "@/services/assetService";
@@ -15,7 +14,7 @@ import {
   Edit,
   Trash2,
   Calendar,
-  Tool,
+  Wrench,
   AlertCircle,
   CheckCircle,
   UserCheck,
@@ -43,7 +42,6 @@ const AssetDetail = () => {
   const [isCheckinDialogOpen, setIsCheckinDialogOpen] = useState(false);
   const [isMaintenanceDialogOpen, setIsMaintenanceDialogOpen] = useState(false);
   
-  // Form states for maintenance
   const [maintenanceType, setMaintenanceType] = useState<"preventive" | "corrective" | "predictive">("preventive");
   const [maintenanceDate, setMaintenanceDate] = useState(new Date().toISOString().split('T')[0]);
   const [maintenanceBy, setMaintenanceBy] = useState("");
@@ -51,7 +49,6 @@ const AssetDetail = () => {
   const [maintenanceDescription, setMaintenanceDescription] = useState("");
   const [maintenanceNotes, setMaintenanceNotes] = useState("");
   
-  // Form states for checkout
   const [selectedUserId, setSelectedUserId] = useState("");
   const [checkoutDate, setCheckoutDate] = useState(new Date().toISOString().split('T')[0]);
   const [expectedReturnDate, setExpectedReturnDate] = useState("");
@@ -136,7 +133,6 @@ const AssetDetail = () => {
       
       setMaintenanceRecords([newRecord, ...maintenanceRecords]);
       
-      // Update asset with new maintenance date
       const updatedAsset = await assetService.getAssetById(id);
       if (updatedAsset) {
         setAsset(updatedAsset);
@@ -172,7 +168,6 @@ const AssetDetail = () => {
       
       setCheckoutHistory([checkoutData, ...checkoutHistory]);
       
-      // Refresh asset data to reflect new status
       const updatedAsset = await assetService.getAssetById(id);
       if (updatedAsset) {
         setAsset(updatedAsset);
@@ -200,7 +195,6 @@ const AssetDetail = () => {
     try {
       await assetService.checkinAsset(id);
       
-      // Refresh asset data and checkout history
       const [updatedAsset, updatedCheckouts] = await Promise.all([
         assetService.getAssetById(id),
         assetService.getAssetCheckouts(id)
@@ -563,7 +557,7 @@ const AssetDetail = () => {
                 <Dialog open={isMaintenanceDialogOpen} onOpenChange={setIsMaintenanceDialogOpen}>
                   <DialogTrigger asChild>
                     <Button variant="outline" className="w-full">
-                      <Tool className="mr-2 h-4 w-4" />
+                      <Wrench className="mr-2 h-4 w-4" />
                       Record Maintenance
                     </Button>
                   </DialogTrigger>
@@ -677,7 +671,7 @@ const AssetDetail = () => {
       <Tabs defaultValue="maintenance">
         <TabsList className="mb-4">
           <TabsTrigger value="maintenance">
-            <Tool className="mr-2 h-4 w-4" />
+            <Wrench className="mr-2 h-4 w-4" />
             Maintenance History
           </TabsTrigger>
           <TabsTrigger value="checkout">
@@ -723,7 +717,7 @@ const AssetDetail = () => {
                 </Table>
               ) : (
                 <div className="text-center py-10">
-                  <Tool className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <Wrench className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                   <h3 className="text-lg font-medium">No maintenance records</h3>
                   <p className="text-muted-foreground mt-1">
                     There are no maintenance records for this asset yet.
@@ -757,7 +751,6 @@ const AssetDetail = () => {
                   </TableHeader>
                   <TableBody>
                     {checkoutHistory.map((checkout) => {
-                      // Find user for this checkout
                       const assignedUser = users.find(u => u.id === checkout.userId);
                       
                       return (

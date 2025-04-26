@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Asset } from "@/types";
@@ -17,10 +16,6 @@ const EditAsset = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   
-  const [asset, setAsset] = useState<Asset | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
-  
   // Form state
   const [name, setName] = useState("");
   const [type, setType] = useState("");
@@ -31,9 +26,9 @@ const EditAsset = () => {
   const [description, setDescription] = useState("");
   const [serialNumber, setSerialNumber] = useState("");
   const [warrantyExpiryDate, setWarrantyExpiryDate] = useState("");
-  const [lastMaintenanceDate, setLastMaintenanceDate] = useState("");
-  const [nextMaintenanceDate, setNextMaintenanceDate] = useState("");
   
+  const [isLoading, setIsLoading] = useState(true);
+
   // Common asset types for selection
   const assetTypes = [
     "Laptop",
@@ -49,16 +44,17 @@ const EditAsset = () => {
     "Peripherals",
     "Other",
   ];
-  
+
   useEffect(() => {
-    const fetchAsset = async () => {
+    const fetchAssetData = async () => {
       if (!id) return;
       
       try {
         setIsLoading(true);
-        const fetchedAsset = await assetService.getAssetById(id);
         
-        if (!fetchedAsset) {
+        const assetData = await assetService.getAssetById(id);
+        
+        if (!assetData) {
           toast({
             variant: "destructive",
             title: "Asset not found",
@@ -68,21 +64,15 @@ const EditAsset = () => {
           return;
         }
         
-        setAsset(fetchedAsset);
-        
-        // Populate form fields
-        setName(fetchedAsset.name);
-        setType(fetchedAsset.type);
-        setStatus(fetchedAsset.status);
-        setPurchaseDate(fetchedAsset.purchaseDate);
-        setPurchaseCost(fetchedAsset.purchaseCost.toString());
-        setLocation(fetchedAsset.location);
-        setDescription(fetchedAsset.description || "");
-        setSerialNumber(fetchedAsset.serialNumber || "");
-        setWarrantyExpiryDate(fetchedAsset.warrantyExpiryDate || "");
-        setLastMaintenanceDate(fetchedAsset.lastMaintenanceDate || "");
-        setNextMaintenanceDate(fetchedAsset.nextMaintenanceDate || "");
-        
+        setName(assetData.name);
+        setType(assetData.type);
+        setStatus(assetData.status);
+        setPurchaseDate(assetData.purchaseDate);
+        setPurchaseCost(assetData.purchaseCost.toString());
+        setLocation(assetData.location);
+        setDescription(assetData.description || "");
+        setSerialNumber(assetData.serialNumber || "");
+        setWarrantyExpiryDate(assetData.warrantyExpiryDate || "");
       } catch (error) {
         toast({
           variant: "destructive",
@@ -94,13 +84,11 @@ const EditAsset = () => {
       }
     };
     
-    fetchAsset();
+    fetchAssetData();
   }, [id, navigate, toast]);
-  
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
-    if (!id || !asset) return;
     
     if (!name || !type || !purchaseDate || !purchaseCost || !location) {
       toast({
@@ -112,9 +100,9 @@ const EditAsset = () => {
     }
     
     try {
-      setIsSaving(true);
+      setIsLoading(true);
       
-      const updatedAsset: Partial<Asset> = {
+      const updatedAsset: Omit<Asset, 'id' | 'createdAt'> = {
         name,
         type,
         status,
@@ -124,8 +112,6 @@ const EditAsset = () => {
         description: description || undefined,
         serialNumber: serialNumber || undefined,
         warrantyExpiryDate: warrantyExpiryDate || undefined,
-        lastMaintenanceDate: lastMaintenanceDate || undefined,
-        nextMaintenanceDate: nextMaintenanceDate || undefined,
       };
       
       await assetService.updateAsset(id, updatedAsset);
@@ -143,36 +129,13 @@ const EditAsset = () => {
         description: "Failed to update the asset. Please try again.",
       });
     } finally {
-      setIsSaving(false);
+      setIsLoading(false);
     }
   };
   
   const handleCancel = () => {
     navigate(`/assets/${id}`);
   };
-  
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-[80vh]">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-lg">Loading asset details...</p>
-        </div>
-      </div>
-    );
-  }
-  
-  if (!asset) {
-    return (
-      <div className="flex flex-col items-center justify-center h-[60vh] space-y-4">
-        <h2 className="text-2xl font-bold">Asset Not Found</h2>
-        <p className="text-muted-foreground">The asset you're trying to edit doesn't exist or has been removed.</p>
-        <Button asChild>
-          <a href="/assets">Back to Assets</a>
-        </Button>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-6">
@@ -186,14 +149,14 @@ const EditAsset = () => {
       <Card>
         <CardHeader>
           <CardTitle>Asset Information</CardTitle>
-          <CardDescription>Update the details of this asset</CardDescription>
+          <CardDescription>Edit the details of the asset</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="name" required>
-                  Asset Name
+                <Label htmlFor="name">
+                  Asset Name <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="name"
@@ -205,8 +168,8 @@ const EditAsset = () => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="type" required>
-                  Asset Type
+                <Label htmlFor="type">
+                  Asset Type <span className="text-red-500">*</span>
                 </Label>
                 <Select value={type} onValueChange={setType}>
                   <SelectTrigger>
@@ -218,16 +181,13 @@ const EditAsset = () => {
                         {assetType}
                       </SelectItem>
                     ))}
-                    {!assetTypes.includes(type) && (
-                      <SelectItem value={type}>{type}</SelectItem>
-                    )}
                   </SelectContent>
                 </Select>
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="status" required>
-                  Status
+                <Label htmlFor="status">
+                  Status <span className="text-red-500">*</span>
                 </Label>
                 <Select 
                   value={status} 
@@ -258,8 +218,8 @@ const EditAsset = () => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="purchaseDate" required>
-                  Purchase Date
+                <Label htmlFor="purchaseDate">
+                  Purchase Date <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="purchaseDate"
@@ -271,8 +231,8 @@ const EditAsset = () => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="purchaseCost" required>
-                  Purchase Cost
+                <Label htmlFor="purchaseCost">
+                  Purchase Cost <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="purchaseCost"
@@ -287,8 +247,8 @@ const EditAsset = () => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="location" required>
-                  Location
+                <Label htmlFor="location">
+                  Location <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="location"
@@ -311,30 +271,6 @@ const EditAsset = () => {
                 />
               </div>
               
-              <div className="space-y-2">
-                <Label htmlFor="lastMaintenanceDate">
-                  Last Maintenance Date
-                </Label>
-                <Input
-                  id="lastMaintenanceDate"
-                  type="date"
-                  value={lastMaintenanceDate}
-                  onChange={(e) => setLastMaintenanceDate(e.target.value)}
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="nextMaintenanceDate">
-                  Next Maintenance Date
-                </Label>
-                <Input
-                  id="nextMaintenanceDate"
-                  type="date"
-                  value={nextMaintenanceDate}
-                  onChange={(e) => setNextMaintenanceDate(e.target.value)}
-                />
-              </div>
-              
               <div className="space-y-2 md:col-span-2">
                 <Label htmlFor="description">
                   Description
@@ -353,8 +289,8 @@ const EditAsset = () => {
               <Button variant="outline" type="button" onClick={handleCancel}>
                 Cancel
               </Button>
-              <Button type="submit" disabled={isSaving}>
-                {isSaving ? "Saving..." : "Save Changes"}
+              <Button type="submit" disabled={isLoading}>
+                {isLoading ? "Updating..." : "Update Asset"}
               </Button>
             </div>
           </form>

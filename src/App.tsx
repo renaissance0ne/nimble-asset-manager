@@ -32,8 +32,8 @@ const App = () => {
               <Route path="/register" element={<Register />} />
               <Route path="/" element={<MainLayout><Dashboard /></MainLayout>} />
               <Route path="/assets" element={<MainLayout><Assets /></MainLayout>} />
-              <Route path="/assets/:id" element={<MainLayout><AssetDetail /></MainLayout>} />
               <Route path="/assets/new" element={<MainLayout><AddAsset /></MainLayout>} />
+              <Route path="/assets/:id" element={<MainLayout><AssetDetail /></MainLayout>} />
               <Route path="/assets/:id/edit" element={<MainLayout><EditAsset /></MainLayout>} />
               <Route path="/users" element={<MainLayout><Users /></MainLayout>} />
               <Route path="/settings" element={<MainLayout><Settings /></MainLayout>} />

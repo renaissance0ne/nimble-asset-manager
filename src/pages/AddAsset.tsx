@@ -113,8 +113,8 @@ const AddAsset = () => {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="name" required>
-                  Asset Name
+                <Label htmlFor="name">
+                  Asset Name <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="name"
@@ -126,8 +126,8 @@ const AddAsset = () => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="type" required>
-                  Asset Type
+                <Label htmlFor="type">
+                  Asset Type <span className="text-red-500">*</span>
                 </Label>
                 <Select value={type} onValueChange={setType}>
                   <SelectTrigger>
@@ -144,8 +144,8 @@ const AddAsset = () => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="status" required>
-                  Status
+                <Label htmlFor="status">
+                  Status <span className="text-red-500">*</span>
                 </Label>
                 <Select 
                   value={status} 
@@ -176,8 +176,8 @@ const AddAsset = () => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="purchaseDate" required>
-                  Purchase Date
+                <Label htmlFor="purchaseDate">
+                  Purchase Date <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="purchaseDate"
@@ -189,8 +189,8 @@ const AddAsset = () => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="purchaseCost" required>
-                  Purchase Cost
+                <Label htmlFor="purchaseCost">
+                  Purchase Cost <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="purchaseCost"
@@ -205,8 +205,8 @@ const AddAsset = () => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="location" required>
-                  Location
+                <Label htmlFor="location">
+                  Location <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="location"
